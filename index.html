@@ -114,9 +114,10 @@ function renderAuth(mode="login"){
       <label>Heslo</label><input type="password" id="pw" required minlength="6" autocomplete="${mode==="login"?"current-password":"new-password"}">
       <div style="margin-top:16px" class="row"><button class="btn primary grow" type="submit">${mode==="login"?"Přihlásit":"Vytvořit účet"}</button></div>
     </form>
-    <p class="muted" style="margin-bottom:0">${mode==="login"
-      ? `Nemáš účet? <a href="#" id="swap">Zaregistruj se</a>`
-      : `Máš účet? <a href="#" id="swap">Přihlas se</a>`}</p>
+    <div style="border-top:1px solid var(--line);margin-top:18px;padding-top:14px;text-align:center">
+      <p style="margin:0 0 8px;font-size:15px">${mode==="login"?"Ještě nemáš účet?":"Už máš účet?"}</p>
+      <button type="button" class="btn" id="swap" style="width:100%;border:2px solid var(--brand);background:transparent;color:var(--brand)">${mode==="login"?"Zaregistrovat se":"Přihlásit se"}</button>
+    </div>
   </div>`;
   document.getElementById("swap").onclick = e => { e.preventDefault(); renderAuth(mode==="login"?"signup":"login"); };
   document.getElementById("authForm").onsubmit = async e => {
