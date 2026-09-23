@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f7a3f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Trenér U7</title>
+<style>
+:root{
+  --bg:#f4f6f3; --card:#ffffff; --ink:#1b2420; --muted:#5f6b65; --line:#dfe5e1;
+  --brand:#1f7a3f; --brand-ink:#ffffff; --accent:#f2b705; --danger:#c0392b; --chip:#e8efe9;
+  --shadow:0 1px 3px rgba(0,0,0,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#111614; --card:#1a211e; --ink:#e7ece9; --muted:#9aa8a1; --line:#2b3531;
+    --brand:#35a862; --brand-ink:#08130c; --chip:#243029; --shadow:none; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:12px 16px calc(10px);display:flex;align-items:center;gap:10px}
+header h1{font-size:18px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header button{background:transparent;border:1px solid currentColor;color:inherit;border-radius:8px;padding:4px 10px;font-size:14px}
+nav.tabs{display:flex;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:50px;z-index:4}
+nav.tabs button{flex:1;border:0;background:none;padding:12px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent}
+nav.tabs button.on{color:var(--brand);border-bottom-color:var(--brand)}
+main{max-width:760px;margin:0 auto;padding:16px 16px 96px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow);margin-bottom:10px}
+.row{display:flex;gap:8px;align-items:center}
+.grow{flex:1;min-width:0}
+.muted{color:var(--muted);font-size:14px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:5px 12px;font-size:14px;white-space:nowrap}
+.chip.on{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.tag{display:inline-block;font-size:12px;border-radius:6px;padding:2px 8px;background:var(--chip);color:var(--ink);margin-right:4px}
+input[type=text],input[type=search],input[type=email],input[type=password],input[type=number],input[type=date],input[type=url],select,textarea{
+  width:100%;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 12px}
+textarea{min-height:84px;resize:vertical}
+label{display:block;font-size:14px;font-weight:600;margin:12px 0 4px}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:600;background:var(--chip);cursor:pointer}
+a.btn{text-decoration:none;color:inherit;display:inline-block}
+.btn.primary{background:var(--brand);color:var(--brand-ink)}
+.btn.danger{background:transparent;color:var(--danger);border:1px solid var(--danger)}
+.btn.small{padding:6px 10px;font-size:14px}
+.btn:disabled{opacity:.5}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;border:0;background:var(--accent);color:#1b1b1b;font-size:30px;box-shadow:0 3px 10px rgba(0,0,0,.25);z-index:6}
+.star{border:0;background:none;font-size:22px;line-height:1;padding:2px 4px;color:var(--muted)}
+.star.on{color:var(--accent)}
+.drill-title{font-weight:700;font-size:17px;margin:0}
+.section h3{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:16px 0 4px}
+.section p{margin:0;white-space:pre-wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.empty{text-align:center;padding:32px 8px;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:90px;background:#222;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;z-index:20;max-width:90vw}
+.plan-item{display:flex;gap:8px;align-items:center;border-top:1px solid var(--line);padding:8px 0}
+.plan-item:first-child{border-top:0}
+.plan-item input{width:64px;padding:6px 8px}
+.num{width:26px;height:26px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none}
+.iconbtn{border:1px solid var(--line);background:var(--card);border-radius:8px;width:32px;height:32px;flex:none}
+dialog{border:0;border-radius:14px;padding:0;width:min(560px,94vw);max-height:86vh;background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog .dhead{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;position:sticky;top:0;background:var(--card)}
+dialog .dbody{padding:8px 16px 16px;overflow:auto}
+.pick{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.center{max-width:380px;margin:40px auto}
+.back{border:0;background:none;color:var(--brand);font-weight:600;padding:0 0 10px}
+@media print{header,nav.tabs,.fab,.noprint{display:none!important} body{background:#fff;color:#000} .card{box-shadow:none;border-color:#bbb;break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚽ Zásobník cvičení U7</h1>
+  <button id="logoutBtn" hidden>Odhlásit</button>
+</header>
+<nav class="tabs" id="tabs" hidden>
+  <button data-tab="drills" class="on">Cvičení</button>
+  <button data-tab="sessions">Tréninky</button>
+</nav>
+<main id="app"><p class="muted">Načítám…</p></main>
+<button class="fab" id="fab" hidden aria-label="Přidat">+</button>
+<dialog id="pickDlg"><div class="dhead"><strong class="grow">Přidat cvičení do tréninku</strong><button class="btn small" id="pickClose">Hotovo</button></div><div class="dbody"><input type="search" id="pickSearch" placeholder="Hledat…"><div id="pickList"></div></div></dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://uoryiokkehsolzpguzkf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_TDu2OlylMytb4BmS0sks3w_vklKVRmv";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const CATS = {
+  rozcvicka:"Rozcvička", koordinace:"Koordinace", vedeni:"Vedení míče", prihravky:"Přihrávky",
+  strelba:"Střelba", souboje:"Souboje 1v1", mala_hra:"Malá hra", zabava:"Zábavná hra"
+};
+
+
+
+const state = { user:null, tab:"drills", drills:[], sessions:[], filter:"all", q:"", onlyFav:false, onlyCz:false, view:null };
+const app = document.getElementById("app");
+const fab = document.getElementById("fab");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2600); }
+function fail(e){ console.error(e); toast("Chyba: " + (e?.message || e)); }
+const fmtDate = d => new Date(d+"T00:00").toLocaleDateString("cs-CZ",{weekday:"short",day:"numeric",month:"numeric",year:"numeric"});
+const players = d => d.players_min||d.players_max ? `${d.players_min||"?"}–${d.players_max||"?"} hráčů` : "";
+
+/* ---------- AUTH ---------- */
+function renderAuth(mode="login"){
+  document.getElementById("tabs").hidden = true; fab.hidden = true; document.getElementById("logoutBtn").hidden = true;
+  app.innerHTML = `<div class="center card">
+    <h2 style="margin-top:0">${mode==="login"?"Přihlášení trenéra":"Nový účet"}</h2>
+    <form id="authForm">
+      <label>E-mail</label><input type="email" id="email" required autocomplete="email">
+      <label>Heslo</label><input type="password" id="pw" required minlength="6" autocomplete="${mode==="login"?"current-password":"new-password"}">
+      <div style="margin-top:16px" class="row"><button class="btn primary grow" type="submit">${mode==="login"?"Přihlásit":"Vytvořit účet"}</button></div>
+    </form>
+    <p class="muted" style="margin-bottom:0">${mode==="login"
+      ? `Nemáš účet? <a href="#" id="swap">Zaregistruj se</a>`
+      : `Máš účet? <a href="#" id="swap">Přihlas se</a>`}</p>
+  </div>`;
+  document.getElementById("swap").onclick = e => { e.preventDefault(); renderAuth(mode==="login"?"signup":"login"); };
+  document.getElementById("authForm").onsubmit = async e => {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim(), password = document.getElementById("pw").value;
+    const btn = e.submitter; btn.disabled = true;
+    try{
+      if(mode==="login"){
+        const { error } = await sb.auth.signInWithPassword({ email, password }); if(error) throw error;
+      }else{
+        const { data, error } = await sb.auth.signUp({ email, password, options:{ emailRedirectTo: location.href.split("#")[0] } });
+        if(error) throw error;
+        if(!data.session){ app.innerHTML = `<div class="center card"><h2 style="margin-top:0">Zkontroluj e-mail</h2><p>Poslali jsme ti potvrzovací odkaz na <b>${esc(email)}</b>. Po potvrzení se tady přihlas.</p><button class="btn primary" id="toLogin">Na přihlášení</button></div>`;
+          document.getElementById("toLogin").onclick = () => renderAuth("login"); }
+      }
+    }catch(err){ fail(err); } finally { btn.disabled = false; }
+  };
+}
+
+/* ---------- DATA ---------- */
+async function loadDrills(){
+  const { data, error } = await sb.from("drills").select("*").order("category").order("name");
+  if(error) throw error; state.drills = data;
+}
+async function loadSessions(){
+  const { data, error } = await sb.from("sessions").select("*, session_drills(id, drill_id, position, duration_min, note)").order("date",{ascending:false});
+  if(error) throw error; state.sessions = data;
+}
+
+/* ---------- DRILLS ---------- */
+const LANG = { cs:"🇨🇿 CZ", sk:"🇸🇰 SK", en:"🇬🇧 EN", de:"🇩🇪 DE" };
+const isMine = d => state.user && d.user_id === state.user.id;
+const ytId = u => { const m = /(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/.exec(u||""); return m ? m[1] : null; };
+const safeUrl = u => u && /^https?:\/\//i.test(u) ? u : null;
+const hhmm = mins => `${String(Math.floor(mins/60)%24).padStart(2,"0")}:${String(mins%60).padStart(2,"0")}`;
+const toMin = t => { if(!t) return null; const [h,m] = t.split(":").map(Number); return h*60+m; };
+
+function drillCard(d){
+  return `<div class="card" data-open="${d.id}" style="cursor:pointer">
+    <div class="row"><div class="grow"><p class="drill-title">${esc(d.name)}</p>
+      <div class="muted">${[d.duration_min?d.duration_min+" min":"", players(d), d.coaches_needed?`${d.coaches_needed} trenér${d.coaches_needed>1?"i":""}`:""].filter(Boolean).map(esc).join(" · ")}</div></div>
+      ${isMine(d)?`<button class="star ${d.favorite?"on":""}" data-fav="${d.id}" aria-label="Oblíbené">${d.favorite?"★":"☆"}</button>`:""}</div>
+    <div style="margin-top:6px"><span class="tag">${CATS[d.category]}</span>${d.video_url?`<span class="tag">▶ ${LANG[d.video_lang]||"video"}</span>`:""}${d.checked?`<span class="tag">✓ ověřeno</span>`:""}</div></div>`;
+}
+function renderDrills(){
+  const q = state.q.toLowerCase();
+  const list = state.drills.filter(d =>
+    (state.filter==="all" || d.category===state.filter) && (!state.onlyFav || d.favorite) &&
+    (!state.onlyCz || d.video_lang==="cs" || d.video_lang==="sk") &&
+    (!q || [d.name,d.description,d.equipment,d.coaching_points,d.video_title].join(" ").toLowerCase().includes(q)));
+  app.innerHTML = `
+    <input type="search" id="q" placeholder="Hledat cvičení, pomůcky…" value="${esc(state.q)}">
+    <div class="chips" style="margin-top:10px">
+      <button class="chip ${state.filter==="all"?"on":""}" data-cat="all">Vše</button>
+      ${Object.entries(CATS).map(([k,v])=>`<button class="chip ${state.filter===k?"on":""}" data-cat="${k}">${v} (${state.drills.filter(d=>d.category===k).length})</button>`).join("")}
+    </div>
+    <div class="chips" style="padding-top:0">
+      <button class="chip ${state.onlyFav?"on":""}" data-favf="1">★ Oblíbené</button>
+      <button class="chip ${state.onlyCz?"on":""}" data-cz="1">🇨🇿🇸🇰 Video česky/slovensky</button>
+    </div>
+    <p class="muted" style="margin:0 0 8px">${list.length} cvičení</p>
+    <div id="list">${list.map(drillCard).join("") || `<div class="empty">${state.drills.length ? "Nic neodpovídá filtru." : "Zatím tu nejsou žádná cvičení. Přidej vlastní tlačítkem +."}</div>`}</div>`;
+  const qi = document.getElementById("q");
+  qi.oninput = () => { state.q = qi.value; const pos = qi.selectionStart; renderDrills(); const n=document.getElementById("q"); n.focus(); n.setSelectionRange(pos,pos); };
+  app.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => { state.filter = b.dataset.cat; renderDrills(); });
+  app.querySelector("[data-favf]").onclick = () => { state.onlyFav = !state.onlyFav; renderDrills(); };
+  app.querySelector("[data-cz]").onclick = () => { state.onlyCz = !state.onlyCz; renderDrills(); };
+  app.querySelectorAll("[data-open]").forEach(c => c.onclick = e => { if(e.target.closest("[data-fav]")) return; showDrill(c.dataset.open); });
+  app.querySelectorAll("[data-fav]").forEach(b => b.onclick = () => toggleField(b.dataset.fav, "favorite"));
+}
+async function toggleField(id, field){
+  const d = state.drills.find(x=>x.id===id); d[field] = !d[field]; render();
+  const { error } = await sb.from("drills").update({ [field]:d[field] }).eq("id", id);
+  if(error){ d[field] = !d[field]; render(); fail(error); }
+}
+function videoBlock(d){
+  const url = safeUrl(d.video_url); if(!url) return "";
+  const id = ytId(url);
+  return `<div class="section"><h3>Video ${LANG[d.video_lang]?`(${LANG[d.video_lang]})`:""}</h3>
+    ${id?`<div style="position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000;margin-bottom:6px"><iframe src="https://www.youtube-nocookie.com/embed/${id}" title="${esc(d.video_title||d.name)}" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`:""}
+    <p><a href="${esc(url)}" target="_blank" rel="noopener">${esc(d.video_title || url)}</a></p></div>`;
+}
+function showDrill(id){
+  const d = state.drills.find(x=>x.id===id); if(!d) return;
+  state.view = { type:"drill", id };
+  fab.hidden = true;
+  const sec = (t,v) => v ? `<div class="section"><h3>${t}</h3><p>${esc(v)}</p></div>` : "";
+  const mine = isMine(d);
+  app.innerHTML = `<button class="back noprint" id="back">‹ Zpět</button>
+   <div class="card">
+    <div class="row"><h2 class="grow" style="margin:0">${esc(d.name)}</h2>
+      ${mine?`<button class="star ${d.favorite?"on":""}" data-fav="${d.id}">${d.favorite?"★":"☆"}</button>`:""}</div>
+    <div style="margin:8px 0"><span class="tag">${CATS[d.category]}</span>
+      ${d.duration_min?`<span class="tag">⏱ ${d.duration_min} min</span>`:""}
+      ${players(d)?`<span class="tag">👥 ${esc(players(d))}</span>`:""}
+      ${d.coaches_needed?`<span class="tag">🧑‍🏫 ${d.coaches_needed} trenér${d.coaches_needed>1?"i":""}</span>`:""}
+      ${d.area?`<span class="tag">📐 ${esc(d.area)}</span>`:""}</div>
+    ${videoBlock(d)}
+    ${sec("Průběh",d.description)}${sec("Příprava",d.setup)}${sec("Pomůcky",d.equipment)}
+    ${sec("Na co dbát",d.coaching_points)}${sec("Varianty",d.variations)}
+    ${mine?`<label class="noprint" style="display:flex;gap:8px;align-items:center;font-weight:400;margin-top:16px"><input type="checkbox" id="chk" ${d.checked?"checked":""}> Video jsem zkontroloval, popis sedí</label>`
+      :`<p class="muted noprint" style="margin-top:16px">Cvičení ze společné knihovny. Popis vznikl podle názvu videa – před použitím si video krátce pusť.</p>`}
+    <div class="row noprint" style="margin-top:14px"><button class="btn primary" id="edit">${mine?"Upravit":"Upravit jako vlastní kopii"}</button><span class="grow"></span>${mine?`<button class="btn danger" id="del">Smazat</button>`:""}</div>
+   </div>`;
+  document.getElementById("back").onclick = () => { state.view=null; render(); };
+  document.getElementById("edit").onclick = () => editDrill(mine ? d : { ...d, id:null, user_id:null, name:d.name });
+  const fav = app.querySelector("[data-fav]"); if(fav) fav.onclick = async () => { await toggleField(d.id,"favorite"); showDrill(d.id); };
+  const chk = document.getElementById("chk"); if(chk) chk.onchange = () => toggleField(d.id,"checked").then(()=>showDrill(d.id));
+  const del = document.getElementById("del"); if(del) del.onclick = async () => {
+    if(!confirm(`Opravdu smazat cvičení „${d.name}“? Zmizí i z tréninků, kde je použité.`)) return;
+    const { error } = await sb.from("drills").delete().eq("id", d.id); if(error) return fail(error);
+    await Promise.all([loadDrills(), loadSessions()]); state.view=null; toast("Smazáno"); render();
+  };
+  scrollTo(0,0);
+}
+function editDrill(d={}){
+  state.view = { type:"editDrill" }; fab.hidden = true;
+  const f = (k)=>esc(d[k]??"");
+  app.innerHTML = `<button class="back" id="back">‹ Zpět</button>
+  <form class="card" id="df">
+    <h2 style="margin-top:0">${d.id?"Upravit cvičení":(d.name?"Vlastní kopie cvičení":"Nové cvičení")}</h2>
+    <label>Název *</label><input type="text" name="name" required value="${f("name")}">
+    <label>Kategorie *</label><select name="category">${Object.entries(CATS).map(([k,v])=>`<option value="${k}" ${d.category===k?"selected":""}>${v}</option>`).join("")}</select>
+    <div class="grid2">
+      <div><label>Délka (min)</label><input type="number" name="duration_min" min="1" max="90" value="${f("duration_min")}"></div>
+      <div><label>Trenérů potřeba</label><input type="number" name="coaches_needed" min="1" max="6" value="${f("coaches_needed")}"></div>
+      <div><label>Hráčů od</label><input type="number" name="players_min" min="1" value="${f("players_min")}"></div>
+      <div><label>Hráčů do</label><input type="number" name="players_max" min="1" value="${f("players_max")}"></div>
+    </div>
+    <label>Prostor</label><input type="text" name="area" placeholder="např. 20 × 20 m" value="${f("area")}">
+    <label>Pomůcky</label><input type="text" name="equipment" value="${f("equipment")}">
+    <label>Příprava / organizace</label><textarea name="setup">${f("setup")}</textarea>
+    <label>Průběh cvičení</label><textarea name="description">${f("description")}</textarea>
+    <label>Na co dbát (koučovací body)</label><textarea name="coaching_points">${f("coaching_points")}</textarea>
+    <label>Varianty / ztížení</label><textarea name="variations">${f("variations")}</textarea>
+    <label>Odkaz na video</label><input type="url" name="video_url" placeholder="https://www.youtube.com/watch?v=…" value="${f("video_url")}">
+    <div class="grid2"><div><label>Název videa</label><input type="text" name="video_title" value="${f("video_title")}"></div>
+    <div><label>Jazyk videa</label><select name="video_lang"><option value=""></option>${Object.entries(LANG).map(([k,v])=>`<option value="${k}" ${d.video_lang===k?"selected":""}>${v}</option>`).join("")}</select></div></div>
+    <div class="row" style="margin-top:18px"><button class="btn primary grow" type="submit">Uložit</button></div>
+  </form>`;
+  document.getElementById("back").onclick = () => state.drills.some(x=>x.id===d.id) ? showDrill(d.id) : (state.view=null, render());
+  document.getElementById("df").onsubmit = async e => {
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target));
+    for(const k of ["duration_min","players_min","players_max","coaches_needed"]) fd[k] = fd[k] ? Number(fd[k]) : null;
+    for(const k in fd) if(fd[k]==="") fd[k]=null;
+    const btn = e.submitter; btn.disabled = true;
+    const q = d.id ? sb.from("drills").update(fd).eq("id", d.id).select().single()
+                   : sb.from("drills").insert({ ...fd, user_id: state.user.id }).select().single();
+    const { data, error } = await q; btn.disabled = false;
+    if(error) return fail(error);
+    await loadDrills(); toast("Uloženo"); showDrill(data.id);
+  };
+  scrollTo(0,0);
+}
+
+/* ---------- SESSIONS ---------- */
+function sessionTotal(s){ return (s.session_drills||[]).reduce((a,x)=>a+(x.duration_min||0),0); }
+function sessionTimes(s){
+  const start = toMin(s.start_time);
+  return start==null ? "" : `${hhmm(start)}–${hhmm(start+sessionTotal(s))}`;
+}
+function renderSessions(){
+  app.innerHTML = state.sessions.length ? state.sessions.map(s=>`
+    <div class="card" data-sopen="${s.id}" style="cursor:pointer">
+      <p class="drill-title">${esc(s.title)}</p>
+      <div class="muted">${fmtDate(s.date)}${s.start_time?" · "+sessionTimes(s):""} · ${(s.session_drills||[]).length} cvičení · ${sessionTotal(s)} min${s.coaches?` · ${s.coaches} trenér${s.coaches>1?"i":""}`:""}</div></div>`).join("")
+    : `<div class="empty"><p>Zatím žádný naplánovaný trénink.</p><p>Tlačítkem + si poskládej trénink ze cvičení.</p></div>`;
+  app.querySelectorAll("[data-sopen]").forEach(c => c.onclick = () => showSession(c.dataset.sopen));
+}
+function showSession(id){
+  const s = state.sessions.find(x=>x.id===id); if(!s) return;
+  state.view = { type:"session", id }; fab.hidden = true;
+  const items = [...(s.session_drills||[])].sort((a,b)=>a.position-b.position);
+  const start = toMin(s.start_time);
+  let t = 0;
+  app.innerHTML = `<button class="back noprint" id="back">‹ Zpět</button>
+  <div class="card"><h2 style="margin:0">${esc(s.title)}</h2>
+    <div class="muted">${fmtDate(s.date)}${start!=null?" · "+sessionTimes(s):""} · celkem ${sessionTotal(s)} min</div>
+    <div style="margin-top:8px">${s.coaches?`<span class="tag">🧑‍🏫 ${s.coaches} trenér${s.coaches>1?"i":""}</span>`:""}${s.players_expected?`<span class="tag">👥 ${s.players_expected} dětí</span>`:""}</div>
+    ${s.note?`<p style="white-space:pre-wrap">${esc(s.note)}</p>`:""}
+    <div class="row noprint" style="margin-top:12px;flex-wrap:wrap"><button class="btn primary small" id="edit">Upravit</button><button class="btn small" id="print">Tisk / PDF</button><button class="btn small" id="dup">Duplikovat</button><span class="grow"></span><button class="btn danger small" id="del">Smazat</button></div></div>
+  ${items.map((it,i)=>{ const d = state.drills.find(x=>x.id===it.drill_id); if(!d) return ""; const from=t; t+=it.duration_min||0;
+    const when = start!=null ? `${hhmm(start+from)}–${hhmm(start+t)}` : `${from}.–${t}. min`;
+    const warn = s.coaches && d.coaches_needed && d.coaches_needed > s.coaches ? ` <span class="tag" style="background:#f8d7a8;color:#5a3800">potřeba ${d.coaches_needed} trenérů</span>` : "";
+    const url = safeUrl(d.video_url);
+    return `<div class="card"><div class="row"><span class="num">${i+1}</span><div class="grow"><p class="drill-title">${esc(d.name)}</p>
+      <div class="muted"><b>${when}</b> · ${CATS[d.category]}${d.coaches_needed?` · 🧑‍🏫 ${d.coaches_needed}`:""}${warn}</div></div></div>
+      ${it.note?`<p style="margin:8px 0 0"><b>Poznámka:</b> ${esc(it.note)}</p>`:""}
+      ${d.description?`<p style="white-space:pre-wrap;margin:8px 0 0">${esc(d.description)}</p>`:""}
+      ${d.equipment?`<p class="muted" style="margin:6px 0 0"><b>Pomůcky:</b> ${esc(d.equipment)}</p>`:""}
+      ${d.coaching_points?`<p class="muted" style="white-space:pre-wrap;margin:6px 0 0"><b>Dbát:</b> ${esc(d.coaching_points)}</p>`:""}
+      <div class="row noprint" style="margin-top:8px">${url?`<a class="btn small" href="${esc(url)}" target="_blank" rel="noopener">▶ Video</a>`:""}<button class="btn small" data-detail="${d.id}">Detail cvičení</button></div></div>`; }).join("")}`;
+  document.getElementById("back").onclick = () => { state.view=null; render(); };
+  document.getElementById("edit").onclick = () => editSession(s);
+  document.getElementById("print").onclick = () => print();
+  document.getElementById("dup").onclick = () => editSession({ ...s, id:null, date:new Date().toISOString().slice(0,10), title:s.title+" (kopie)" });
+  app.querySelectorAll("[data-detail]").forEach(b => b.onclick = () => showDrill(b.dataset.detail));
+  document.getElementById("del").onclick = async () => {
+    if(!confirm(`Smazat trénink „${s.title}“? Cvičení v zásobníku zůstanou.`)) return;
+    const { error } = await sb.from("sessions").delete().eq("id", s.id); if(error) return fail(error);
+    await loadSessions(); state.view=null; toast("Smazáno"); render();
+  };
+  scrollTo(0,0);
+}
+function editSession(s={}){
+  state.view = { type:"editSession" }; fab.hidden = true;
+  const items = [...(s.session_drills||[])].sort((a,b)=>a.position-b.position).map(x=>({ drill_id:x.drill_id, duration_min:x.duration_min, note:x.note||"" }));
+  const today = new Date().toISOString().slice(0,10);
+  app.innerHTML = `<button class="back" id="back">‹ Zpět</button>
+  <form class="card" id="sf">
+    <h2 style="margin-top:0">${s.id?"Upravit trénink":"Nový trénink"}</h2>
+    <label>Název *</label><input type="text" name="title" required placeholder="např. Úterní trénink" value="${esc(s.title||"")}">
+    <div class="grid2"><div><label>Datum</label><input type="date" name="date" required value="${esc(s.date||today)}"></div>
+    <div><label>Začátek</label><input type="time" name="start_time" value="${esc((s.start_time||"").slice(0,5))}" style="width:100%;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 12px"></div>
+    <div><label>Počet trenérů</label><input type="number" name="coaches" min="1" max="10" value="${esc(s.coaches??"")}"></div>
+    <div><label>Počet dětí</label><input type="number" name="players_expected" min="1" max="60" value="${esc(s.players_expected??"")}"></div></div>
+    <label>Poznámka</label><textarea name="note" placeholder="Téma, docházka, co se povedlo…">${esc(s.note||"")}</textarea>
+    <label>Rozvrh tréninku <span class="muted" id="tot"></span></label>
+    <div id="items"></div>
+    <button type="button" class="btn small" id="add" style="margin-top:8px">+ Přidat cvičení</button>
+    <div class="row" style="margin-top:18px"><button class="btn primary grow" type="submit">Uložit trénink</button></div>
+  </form>`;
+  const form = document.getElementById("sf"), box = document.getElementById("items");
+  function totals(){
+    const sum = items.reduce((a,x)=>a+(Number(x.duration_min)||0),0);
+    const st = toMin(form.start_time.value);
+    document.getElementById("tot").textContent = `(celkem ${sum} min${st!=null?`, ${hhmm(st)}–${hhmm(st+sum)}`:""})`;
+    let acc = 0;
+    box.querySelectorAll("[data-when]").forEach((el,i) => { const a=acc; acc += Number(items[i].duration_min)||0; el.textContent = st!=null ? `${hhmm(st+a)}–${hhmm(st+acc)}` : `${a}.–${acc}. min`; });
+    const c = Number(form.coaches.value)||0;
+    box.querySelectorAll("[data-cw]").forEach((el,i) => { const d = state.drills.find(x=>x.id===items[i].drill_id); el.hidden = !(c && d?.coaches_needed > c); });
+  }
+  function draw(){
+    box.innerHTML = items.length ? items.map((it,i)=>{ const d=state.drills.find(x=>x.id===it.drill_id);
+      return `<div class="plan-item" style="flex-wrap:wrap"><span class="num">${i+1}</span>
+        <div class="grow"><div>${esc(d?.name||"?")}</div><div class="muted" data-when></div><div class="muted" data-cw hidden style="color:#b35c00">⚠ potřeba ${d?.coaches_needed} trenérů</div></div>
+        <input type="number" min="1" max="90" value="${it.duration_min??""}" data-min="${i}" aria-label="minut"><span class="muted">min</span>
+        <button type="button" class="iconbtn" data-up="${i}" ${i?"":"disabled"} aria-label="Posunout nahoru">↑</button>
+        <button type="button" class="iconbtn" data-rm="${i}" aria-label="Odebrat">✕</button>
+        <input type="text" data-note="${i}" placeholder="Poznámka (kdo vede, stanoviště…)" value="${esc(it.note)}" style="flex-basis:100%;margin-left:34px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card)"></div>`; }).join("")
+      : `<p class="muted">Zatím prázdné.</p>`;
+    box.querySelectorAll("[data-min]").forEach(inp => inp.oninput = () => { items[inp.dataset.min].duration_min = inp.value?Number(inp.value):null; totals(); });
+    box.querySelectorAll("[data-note]").forEach(inp => inp.oninput = () => { items[inp.dataset.note].note = inp.value; });
+    box.querySelectorAll("[data-up]").forEach(b => b.onclick = () => { const i=+b.dataset.up; [items[i-1],items[i]]=[items[i],items[i-1]]; draw(); });
+    box.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { items.splice(+b.dataset.rm,1); draw(); });
+    totals();
+  }
+  form.start_time.oninput = totals; form.coaches.oninput = totals;
+  draw();
+  const dlg = document.getElementById("pickDlg"), ps = document.getElementById("pickSearch"), pl = document.getElementById("pickList");
+  let pickCat = "all";
+  function drawPick(){
+    const q = ps.value.toLowerCase();
+    const chips = `<div class="chips" style="margin-top:8px"><button type="button" class="chip ${pickCat==="all"?"on":""}" data-pc="all">Vše</button>${Object.entries(CATS).map(([k,v])=>`<button type="button" class="chip ${pickCat===k?"on":""}" data-pc="${k}">${v}</button>`).join("")}</div>`;
+    pl.innerHTML = chips + (state.drills.filter(d=>(pickCat==="all"||d.category===pickCat)&&(!q||d.name.toLowerCase().includes(q)))
+      .map(d=>`<div class="pick"><div class="grow"><b>${esc(d.name)}</b><div class="muted">${CATS[d.category]}${d.duration_min?" · "+d.duration_min+" min":""}${d.coaches_needed?" · 🧑‍🏫 "+d.coaches_needed:""}${d.video_url?" · ▶":""}</div></div><button type="button" class="btn small primary" data-pick="${d.id}">Přidat</button></div>`).join("")
+      || `<p class="muted">Nic nenalezeno.</p>`);
+    pl.querySelectorAll("[data-pc]").forEach(b => b.onclick = () => { pickCat = b.dataset.pc; drawPick(); });
+    pl.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => { const d=state.drills.find(x=>x.id===b.dataset.pick); items.push({ drill_id:d.id, duration_min:d.duration_min, note:"" }); draw(); b.textContent="✓"; setTimeout(()=>b.textContent="Přidat",700); });
+  }
+  ps.oninput = drawPick;
+  document.getElementById("add").onclick = () => { ps.value=""; drawPick(); dlg.showModal(); };
+  document.getElementById("pickClose").onclick = () => dlg.close();
+  document.getElementById("back").onclick = () => s.id ? showSession(s.id) : (state.view=null, render());
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(form));
+    for(const k of ["coaches","players_expected"]) fd[k] = fd[k] ? Number(fd[k]) : null;
+    for(const k in fd) if(fd[k]==="") fd[k]=null;
+    const btn = e.submitter; btn.disabled = true;
+    try{
+      let id = s.id;
+      if(id){ const { error } = await sb.from("sessions").update(fd).eq("id", id); if(error) throw error;
+        const { error: e2 } = await sb.from("session_drills").delete().eq("session_id", id); if(e2) throw e2; }
+      else { const { data, error } = await sb.from("sessions").insert(fd).select().single(); if(error) throw error; id = data.id; }
+      if(items.length){ const { error } = await sb.from("session_drills").insert(items.map((x,i)=>({ session_id:id, drill_id:x.drill_id, duration_min:x.duration_min||null, note:x.note||null, position:i }))); if(error) throw error; }
+      await loadSessions(); toast("Trénink uložen"); showSession(id);
+    }catch(err){ fail(err); btn.disabled = false; }
+  };
+  scrollTo(0,0);
+}
+
+/* ---------- SHELL ---------- */
+function render(){
+  if(!state.user) return renderAuth();
+  document.getElementById("tabs").hidden = false; document.getElementById("logoutBtn").hidden = false;
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab===state.tab));
+  if(state.view?.type==="drill") return showDrill(state.view.id);
+  if(state.view?.type==="session") return showSession(state.view.id);
+  fab.hidden = false;
+  state.tab==="drills" ? renderDrills() : renderSessions();
+}
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => { state.tab = b.dataset.tab; state.view = null; render(); });
+fab.onclick = () => state.tab==="drills" ? editDrill() : editSession();
+document.getElementById("logoutBtn").onclick = () => sb.auth.signOut();
+
+let loadedFor = null;
+sb.auth.onAuthStateChange((_ev, session) => {
+  const u = session?.user || null;
+  state.user = u;
+  if(!u){ loadedFor = null; state.drills=[]; state.sessions=[]; state.view=null; return render(); }
+  if(loadedFor === u.id) return;
+  loadedFor = u.id;
+  setTimeout(async () => {
+    try{ await Promise.all([loadDrills(), loadSessions()]); }catch(e){ fail(e); }
+    render();
+  }, 0);
+});
+</script>
+</body>
+</html>
